@@ -217,11 +217,11 @@ ROWS = [
     "description": ("<b>openpilot keeps steering for you even when it isn't controlling the gas and brake, so it holds your lane when you press a pedal, " +
                     "cancel, or haven't engaged openpilot at all.</b><br><br>It steers from the moment your car's cruise control is switched on until " +
                     "you switch that back off or shift out of drive, and it pauses while you brake below the speed set in \"Pause on Brake Press " +
-                    "Below\", except at a full stop. If cruise control is already on when you start the car, it waits until you engage openpilot, " +
-                    "switch cruise control off and on, or press your car's LKAS button if it has one (not on Mazda, Nissan, or Subaru). That press only " +
-                    "starts steering and doesn't run anything assigned to the button. On Hyundai, Kia, and Genesis cars with CAN FD where your car " +
-                    "handles the gas and brake, or with \"Enable With LKAS\" on, engaging openpilot or pressing the LKAS button takes the place of " +
-                    "cruise control."),
+                    "Below\", except at a full stop. By default, if cruise control is already on when you start the car, it waits until you engage " +
+                    "openpilot, switch cruise control off and on, or press your car's LKAS button if it has one (not on Mazda, Nissan, or Subaru). " +
+                    "Turn on \"Arm When Cruise Already On\" to arm from that startup cruise state instead. That LKAS press only starts steering and " +
+                    "doesn't run anything assigned to the button. On Hyundai, Kia, and Genesis cars with CAN FD where your car handles the gas and " +
+                    "brake, or with \"Enable With LKAS\" on, engaging openpilot or pressing the LKAS button takes the place of cruise control."),
     "key": "AlwaysOnLateral",
     "on_change": lambda context, old_value, new_value: context.started and new_value,
     "order": 1,
@@ -244,9 +244,20 @@ ROWS = [
     "widget": "toggle"
   },
   {
+    "description": ("<b>If cruise control is already on when you start the car, arm \"Always On Lateral\" without switching cruise off and back " +
+                    "on.</b><br><br>Only applies when steering is armed by cruise control, not by \"Enable With LKAS\". Off matches current " +
+                    "FrogPilot behavior."),
+    "key": "AlwaysOnLateralArmAtStartup",
+    "order": 1,
+    "path": ("Driving Controls", "STEERING", "Always On Lateral"),
+    "title": "Arm When Cruise Already On",
+    "visible": lambda context: context.level_reason("AlwaysOnLateralArmAtStartup"),
+    "widget": "toggle"
+  },
+  {
     "description": "<b>Pause \"Always On Lateral\" below the speed set here while the brake pedal is pressed, except at a full stop.</b>",
     "key": "PauseAOLOnBrake",
-    "order": 1,
+    "order": 2,
     "path": ("Driving Controls", "STEERING", "Always On Lateral"),
     "title": "Pause on Brake Press Below",
     "value": rows.number(0, 99, unit=" mph", labels={0: "Off"}, fast=True,

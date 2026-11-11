@@ -18,6 +18,7 @@ class FrogPilotCard:
     self.very_long_press_threshold = CRUISE_LONG_PRESS * 5
 
     self.always_on_lateral_allowed = False
+    self.checked_startup_cruise = False
     self.cruise_available_previously = True
     self.force_coast = False
     self.lkas_press_used = False
@@ -88,6 +89,14 @@ class FrogPilotCard:
 
         self.always_on_lateral_allowed |= any(panda_state.controlsAllowed for panda_state in sm["pandaStates"])
     elif frogpilot_toggles.always_on_lateral_main:
+      # Upstream assumes cruise was already available, so cruise that comes up with the car
+      # never arms AOL. Optionally restore the older rising-edge behavior on the first valid
+      # cruise reading when the driver opts in.
+      if not self.checked_startup_cruise and carState.canValid:
+        if frogpilot_toggles.always_on_lateral_arm_at_startup:
+          self.cruise_available_previously = False
+        self.checked_startup_cruise = True
+
       self.always_on_lateral_allowed |= sm["carControl"].enabled or not self.cruise_available_previously
       self.always_on_lateral_allowed &= carState.cruiseState.available
 

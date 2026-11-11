@@ -772,6 +772,7 @@ SETTING_LABELS = {
   "AlertVolumeControl": {"name": "Alert Volumes"},
   "AlwaysOnDM": {"name": "Always-On Driver Monitoring"},
   "AlwaysOnLateral": {"name": "Always On Lateral"},
+  "AlwaysOnLateralArmAtStartup": {"name": "Always On Lateral: Arm When Cruise Already On"},
   "AlwaysOnLateralLKASButton": {"name": "Always On Lateral: Enable With LKAS"},
   "AMapKey1": {"name": "Amap Key"},
   "AutomaticallyDownloadModels": {"name": "Automatically Download New Models"},
@@ -1261,6 +1262,7 @@ frogpilot_default_params: list[tuple[str, str | bytes, int, str]] = [
   ("AlertVolumeControl", "0", 2, "0"),
   ("AlwaysOnDM", "0", 0, "0"),
   ("AlwaysOnLateral", "1", 0, "0"),
+  ("AlwaysOnLateralArmAtStartup", "0", 1, "0"),
   ("AlwaysOnLateralLKASButton", "0", 2, "0"),
   ("AMapKey1", "", 0, ""),
   ("AutomaticallyDownloadModels", "1", 1, "0"),
@@ -1872,6 +1874,7 @@ class FrogPilotVariables:
     toggle.always_on_lateral_lkas_selected = self.get_value("AlwaysOnLateralLKASButton")
     toggle.always_on_lateral_lkas = toggle.always_on_lateral_set and toggle.lkas_allowed_for_aol and (toggle.always_on_lateral_lkas_selected or lkas_required_for_aol)
     toggle.always_on_lateral_main = toggle.always_on_lateral_set and not toggle.always_on_lateral_lkas
+    toggle.always_on_lateral_arm_at_startup = self.get_value("AlwaysOnLateralArmAtStartup", condition=toggle.always_on_lateral_main)
     toggle.always_on_lateral_pause_speed = self.get_value("PauseAOLOnBrake", cast=float, condition=toggle.always_on_lateral, conversion=speed_conversion)
 
     automatic_updates_changeable = self.release_branch or self.vetting_branch or self.frogs_go_moo
