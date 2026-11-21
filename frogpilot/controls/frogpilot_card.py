@@ -89,12 +89,13 @@ class FrogPilotCard:
 
         self.always_on_lateral_allowed |= any(panda_state.controlsAllowed for panda_state in sm["pandaStates"])
     elif frogpilot_toggles.always_on_lateral_main:
-      # Upstream assumes cruise was already available, so cruise that comes up with the car
-      # never arms AOL. Optionally restore the older rising-edge behavior on the first valid
-      # cruise reading when the driver opts in.
+      # Personal fork: restore pre-Oct-2026 AOL arming when cruise is already on at
+      # startup. Upstream initializes cruise_available_previously=True so that case
+      # never arms until an off/on cycle. This build treats the first valid cruise
+      # reading as a rising edge instead. (A Params toggle needs a rebuilt
+      # params_pyx.so from FrogPilot's compile pipeline; this fork hard-enables it.)
       if not self.checked_startup_cruise and carState.canValid:
-        if frogpilot_toggles.always_on_lateral_arm_at_startup:
-          self.cruise_available_previously = False
+        self.cruise_available_previously = False
         self.checked_startup_cruise = True
 
       self.always_on_lateral_allowed |= sm["carControl"].enabled or not self.cruise_available_previously
